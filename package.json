@@ -86,6 +86,7 @@
     "cross-env": "5.1.4",
     "css-loader": "0.28.11",
     "dotenv-webpack": "1.5.5",
+    "enzyme": "3.3.0",
     "eslint": "4.19.1",
     "eslint-config-airbnb": "16.1.0",
     "eslint-import-resolver-webpack": "0.9.0",
@@ -112,15 +113,15 @@
     "offline-plugin": "4.9.0",
     "plop": "2.0.0",
     "style-loader": "0.20.3",
-    "ts-loader": "4.1.0",
+    "ts-loader": "4.2.0",
     "tslint": "5.9.1",
     "typescript": "2.8.1",
-    "uglify-js": "3.3.18",
+    "uglify-js": "3.3.20",
     "url-loader": "1.0.1",
     "webpack": "4.5.0",
     "webpack-bundle-analyzer": "2.11.1",
     "webpack-cli": "2.0.14",
     "webpack-dev-middleware": "3.1.2",
-    "webpack-hot-middleware": "2.21.2"
+    "webpack-hot-middleware": "2.22.0"
   }
 }
