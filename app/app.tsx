@@ -11,6 +11,7 @@ import 'babel-polyfill';
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { ApolloProvider } from 'react-apollo';
 import { BrowserRouter as Router } from 'react-router-dom';
 import FontFaceObserver from 'fontfaceobserver';
 
@@ -37,6 +38,9 @@ import App from './containers/App';
 // Import CSS reset and Global Styles
 import './global-styles';
 
+// Import apollo-client config
+import client from './config/apollo-client';
+
 // Observe loading of Merriweather & Montserrat (to remove open sans, remove the <link> tag in
 // the index.html file and this observer)
 const merriweatherObserver = new FontFaceObserver('Merriweather', {});
@@ -53,9 +57,11 @@ const MOUNT_NODE = document.getElementById('app');
 
 const render = () => {
   ReactDOM.render(
-    <Router>
-      <App />
-    </Router>,
+    <ApolloProvider client={client}>
+      <Router>
+        <App />
+      </Router>
+    </ApolloProvider>,
     MOUNT_NODE,
   );
 };
@@ -84,6 +90,10 @@ if (!global.Intl) {
     });
 } else {
   render();
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  window.localStorage.setItem('debug', 'reactBoilerplate:*');
 }
 
 // Install ServiceWorker and AppCache in the end since
