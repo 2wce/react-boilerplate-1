@@ -92,6 +92,7 @@ if (!global.Intl) {
   render();
 }
 
+// Persist "debug" package's enable state in localStorage
 if (process.env.NODE_ENV !== 'production') {
   window.localStorage.setItem('debug', 'reactBoilerplate:*');
 }
