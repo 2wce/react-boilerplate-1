@@ -7,6 +7,10 @@ import getCategoriesGQL from '../../graphql/queries/getCategories.gql';
 // Styles
 import Wrapper, { Category } from './styles';
 
+import { makeDebugger } from '../../lib';
+
+const debug = makeDebugger('categories');
+
 /**
  * @render react
  * @name GetCategories container
@@ -36,6 +40,23 @@ interface IState {
 }
 
 class GetCategories extends Component<IProps, IState> {
+  private static getDerivedStateFromProps(nextProps, prevState) {
+    const { categories, error, loading } = nextProps;
+
+    if (!error && !loading) {
+      const incomingCategories = categories;
+
+      if (incomingCategories !== undefined) {
+        return {
+          hasCategories: Boolean(incomingCategories && incomingCategories.length > 0),
+          staleCategories: incomingCategories,
+        };
+      }
+    }
+
+    return null;
+  }
+
   constructor(props: IProps) {
     super(props);
 
@@ -44,21 +65,6 @@ class GetCategories extends Component<IProps, IState> {
       // Persisted "CATEGORIES"
       staleCategories: props.categories || [],
     };
-  }
-
-  public componentWillReceiveProps(nextProps) {
-    const { categories, error, loading } = nextProps;
-
-    if (!error && !loading) {
-      const incomingCategories = categories;
-
-      if (incomingCategories !== undefined) {
-        this.setState({
-          hasCategories: Boolean(incomingCategories && incomingCategories.length > 0),
-          staleCategories: incomingCategories,
-        });
-      }
-    }
   }
 
   public render() {
