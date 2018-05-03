@@ -13,7 +13,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from 'react-apollo';
 import { BrowserRouter as Router } from 'react-router-dom';
-import FontFaceObserver from 'fontfaceobserver';
+// import FontFaceObserver from 'fontfaceobserver';
 
 import 'sanitize.css/sanitize.css';
 
@@ -65,6 +65,18 @@ const render = () => {
     MOUNT_NODE,
   );
 };
+
+// // Observe loading of Merriweather & Montserrat (to remove open sans, remove the <link> tag in
+// // the index.html file and this observer)
+// const merriweatherObserver = new FontFaceObserver('Merriweather', {});
+// const montserratObserver = new FontFaceObserver('Montserrat', {});
+
+// // When Merriweather is loaded, add a font-family using Merriweather to the body
+// Promise.all([merriweatherObserver.load(), montserratObserver.load()]).then(() => {
+//   document.body.classList.add('fontsLoaded');
+// }, () => {
+//   document.body.classList.remove('fontsLoaded');
+// });
 
 if (module.hot) {
   // Hot reloadable React components and translation json files
