@@ -2,19 +2,18 @@
  * Home
  */
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 // Styles
 import Wrapper from './styles';
 
-class Home extends PureComponent {
+class Home extends Component<{}, {}> {
+  protected wrapper: any;
+
   public render() {
     return (
       <Wrapper>
-        <Helmet>
-          <title>Home</title>
-          <meta name="description" content="Description of Home" />
-        </Helmet>
+        <Helmet title="Home | react-boilerplate" />
       </Wrapper>
     );
   }

@@ -1,40 +1,58 @@
+import classNames from 'classnames';
 import React, { Component } from 'react';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import Measure from 'react-measure';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 // Components
-import Routes from '../../components/Routes';
-// Libraries
-import { makeDebugger, matchMedia } from '../../lib';
+import { ErrorBoundary, Routes } from '../../components';
 // Routes
 import routes from './routes';
 // Styles
 import Wrapper from './styles';
 
-/* tslint:disable:object-literal-sort-keys */
-const themeDark = {
-  isDark: true,
-  palette: {
-    bodyBackground: '#1F1F27',
-    brandPrimary: '#25252D',
-    cardBackground: '#25252D',
-    cardBorderColor: '#414148',
-  },
+export const breakpoints = (width: number) => {
+  if (width < 600) {
+    return 'v-xsmall';
+  }
+  if (width >= 600 && width < 1024) {
+    return 'v-small';
+  }
+  if (width >= 1024 && width < 1440) {
+    return 'v-medium';
+  }
+  if (width >= 1440 && width < 1920) {
+    return 'v-large';
+  }
+  if (width >= 1920) {
+    return 'v-xlarge';
+  }
+  return 'v-unknown';
 };
 
+/* tslint:disable:object-literal-sort-keys */
 const themeLight = {
   isDark: false,
   palette: {
-    bodyBackground: '#fafafa',
-    brandPrimary: '#ffffff',
-    cardBackground: '#ffffff',
+    bodyBackground: '#FAFAFA',
+    brandPrimary: '#FFFFFF',
+    cardBackground: '#FFFFFF',
     cardBorderColor: '#E4E6E9',
   },
 };
 /* tslint:enable:object-literal-sort-keys */
 
-const debug = makeDebugger('app');
+// import { makeDebugger } from '../../lib';
+// const debug = makeDebugger('App');
 
-const mql648 = matchMedia('(min-width: 648px)');
+export interface IProps extends RouteComponentProps<any> {}
+
+interface IState {
+  bounds: {
+    height: number;
+    width: number;
+  };
+  theme: object;
+}
 
 /**
  * @render react
@@ -42,62 +60,86 @@ const mql648 = matchMedia('(min-width: 648px)');
  * @description The skeleton around the actual pages, and should only
  * contain code that should be seen on all pages. (e.g. navigation bar).
  */
+class App extends Component<IProps, IState> {
+  protected componentIsMounted: boolean;
+  protected previousLocation: object;
 
-class App extends Component<{}, IState> {
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
-      mq648: false,
-      mql648,
+      bounds: {
+        height: 0,
+        width: 0,
+      },
       theme: themeLight,
     };
+
+    this.previousLocation = props.location;
   }
 
   public componentDidMount() {
-    mql648.addListener(this.mediaQueryChanged);
-    this.setState({
-      mq648: mql648.matches,
-      mql648,
-    });
+    this.componentIsMounted = true;
   }
 
-  public componentWillUnmount() {
-    // tslint:disable-next-line:no-shadowed-variable
-    const { mql648 } = this.state;
+  public componentWillUpdate(nextProps: IProps) {
+    const { location } = this.props;
 
-    if (mql648) {
-      mql648.removeListener(this.mediaQueryChanged);
+    if (
+      nextProps.history.action !== 'POP' &&
+      (!location.state || !location.state.modal)
+    ) {
+      this.previousLocation = this.props.location;
     }
   }
 
-  public mediaQueryChanged = () => {
-    this.setState({
-      mq648: this.state.mql648.matches,
-    });
+  public componentWillUnmount() {
+    this.componentIsMounted = false;
+  }
+
+  public setState(nextState: any, cb?: () => void) {
+    if (this.componentIsMounted) {
+      super.setState(nextState, cb);
+    }
   }
 
   public render() {
+    const { location } = this.props;
+    const {
+      bounds: { width },
+    } = this.state;
+
+    const isModal = !!(
+      location.state &&
+      location.state.modal &&
+      this.previousLocation !== location
+    );
+
     return (
       <ThemeProvider theme={this.state.theme}>
-        <Wrapper>
-          <Switch>
-            <Routes routes={routes} />
-          </Switch>
-        </Wrapper>
+        <Measure
+          bounds
+          onResize={(contentRect) => {
+            this.setState({ bounds: contentRect.bounds });
+          }}
+        >
+          {({ measureRef }) => (
+            <Wrapper
+              className={classNames('c-app__container', breakpoints(width))}
+              innerRef={measureRef}
+            >
+              <ErrorBoundary>
+                <Routes
+                  location={isModal ? this.previousLocation : location}
+                  routes={routes}
+                />
+              </ErrorBoundary>
+            </Wrapper>
+          )}
+        </Measure>
       </ThemeProvider>
     );
   }
-}
-
-interface IState {
-  mq648: boolean;
-  mql648: {
-    addListener: (func) => void,
-    matches: false,
-    removeListener: (func) => void,
-  };
-  theme: object;
 }
 
 export default withRouter(App);
